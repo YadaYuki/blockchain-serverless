@@ -1,0 +1,28 @@
+# Deployment Bucket and Image Bucket
+# Ref:https://github.com/awsdocs/aws-cloudformation-user-guide/blob/main/doc_source/quickref-s3.md
+
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+    Prefix:
+      Type: String
+    Env:
+      Type: String
+      Default: dev
+      AllowedValues:
+        - dev
+        - production
+
+
+Resources:
+  ServerlessBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Join ["-",[!Ref Prefix, !Ref Env, "serverless"]]
+
+Outputs:
+  ServerlessBucket:
+    Value: !Ref ServerlessBucket
+    Export:
+      Name: !Sub "${AWS::StackName}-ServerlessBucket"
+  

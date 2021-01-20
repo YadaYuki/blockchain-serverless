@@ -1,0 +1,33 @@
+service: blockchain-serverless
+
+provider:
+  name: aws
+  runtime: python3.8
+  region: ap-northeast-1
+  profile: yadayuki
+  deploymentBucket:
+    name: ${cf:${self:custom.prefix}-${self:custom.stage}-s3.ServerlessBucket}
+  environment: 
+    PROFILE_NAME: ${self:provider.profile}
+    ENV: ${self:custom.stage}
+   
+plugins:
+  - serverless-python-requirements
+  - serverless-dotenv-plugin
+  - serverless-offline
+  - serverless-wsgi
+
+functions:
+  api:
+    handler: wsgi_handler.handler
+    events:
+      - http: ANY /
+      - http: ANY {proxy+}
+
+custom:
+  stage: ${opt:stage,self:provider.stage}
+  prefix: blockchain
+  wsgi:
+    app: api.app
+  pythonRequirements:
+    dockerizePip: true
