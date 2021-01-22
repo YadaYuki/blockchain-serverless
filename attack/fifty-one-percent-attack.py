@@ -2,11 +2,14 @@ import requests
 import blockchain
 import wallet
 
-HACK_BLOCK_IDX = 2
-HACKER_NODE_URL = 
+HACK_BLOCK_IDX = 5
+HACKER_NODE_URL = "http://localhost:5001"
 
 miners_wallet = wallet.Wallet()
 blockchain_address = miners_wallet.blockchain_address
+sender_blockchain_address="bSNeAb8dPfayW9BbEq5kq9GqyXG5KoKETZPT4L2u71o8JgeNnH8k7JbeG57GTutUB8h6"
+sender_public_key = "fe1af48eb5cead44b64baab838f48c8b9ed7ee8f497830f1a4e1b1c98f94d9470b92f8eefc46fb8fc8be83f635f25fbc8cc456611a507700af6e591532f7f678"
+sender_private_key = "2f6bd8651f97d826af840a5d8dfb7b770176a61d3f008579dcc327fdd60b60be"
 
 def calculate_total_amount(chain,blockchain_address):
     total_amount = 0.0
@@ -24,8 +27,15 @@ def calculate_total_amount(chain,blockchain_address):
 def get_fifty_one_percentage_attack(valid_chain,hack_block_idx):
 
     # hacked_blockchain = blockchain.BlockChain(blockchain_address=blockchain_address)
+    transaction = wallet.Transaction(
+        sender_private_key,
+        sender_public_key,
+        sender_blockchain_address,
+        recipient_blockchain_address = "A HACKER",
+        value=100.0)
+    signature = transaction.generate_signature()
     hacked_blockchain = blockchain.BlockChain(blockchain_address=blockchain_address,chain = valid_chain[:HACK_BLOCK_IDX])
-    hacked_blockchain.add_transaction(sender_blockchain_address = "THE BLOCKCHAIN",recipient_blockchain_address="A HACKER",value=100.0)
+    hacked_blockchain.add_transaction(sender_blockchain_address,recipient_blockchain_address="A HACKER",value=100.0,sender_public_key=sender_public_key,signature=signature)
     hacked_blockchain.mining()
     
     valid_chain_length = len(valid_chain)
